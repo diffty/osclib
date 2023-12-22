@@ -3,6 +3,14 @@
 #include <string.h>
 
 
+typedef struct OscMessage {
+    char* address;
+    void* argsData;
+    char* argsTypes;
+    int* argsDataIndexes;
+    int argsDataSize;
+} OscMessage;
+
 int calculate_size_with_padding(int size) {
     int paddingSize = size % 4;
     if (paddingSize > 0) {
@@ -14,7 +22,7 @@ int calculate_size_with_padding(int size) {
 }
 
 
-// pDstValue memory block is not allocated by the function `read_data` itself
+// pDstValue memory block is not allocated by the function itself
 void read_data(void* pDstValue, char valueType, void** pDataCursor) {
     switch (valueType) {
         case 'i': {
@@ -88,15 +96,6 @@ void write_data(void* pSrcValue, char valueType, void** pDataBlockPtr) {
         }
     }
 }
-
-typedef struct OscMessage {
-    char* address;
-    void* argsData;
-    char* argsTypes;
-    int* argsDataIndexes;
-    int argsDataSize;
-} OscMessage;
-
 
 int get_arg_value_size(void* pArgData, char argType) {
     switch (argType) {
@@ -272,5 +271,4 @@ int main3() {
     int i;
     for (i = 0; i < 20; i++)
         printf("%d %d\n", i, calculate_size_with_padding(i));
-    
 }
