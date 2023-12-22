@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.c": "c",
+        "main.c": "c",
+    },
+    "C_Cpp.default.cStandard": "c89",
+    "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
+    "C_Cpp.autoAddFileAssociations": false,
+    "C_Cpp.caseSensitiveFileSupport": "enabled",
+}
