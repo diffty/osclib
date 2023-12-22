@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "utils_general.h"
+#include "utils_math.h"
+
 
 typedef struct OscMessage {
     char* address;
@@ -11,18 +14,16 @@ typedef struct OscMessage {
     int argsDataSize;
 } OscMessage;
 
-int calculate_size_with_padding(int size) {
-    int paddingSize = size % 4;
-    if (paddingSize > 0) {
-        return size + (4 - paddingSize);
-    }
-    else {
-        return size;
-    }
-}
+
+typedef struct OscArg {
+    char type;
+    char data;
+    char size;
+    unsigned int msgDataIdx;
+} OscArg;
 
 
-// pDstValue memory block is not allocated by the function itself
+// pDstValue memory block is NOT allocated by the function itself
 void read_data(void* pDstValue, char valueType, void** pDataCursor) {
     switch (valueType) {
         case 'i': {
@@ -159,15 +160,6 @@ void* get_arg_in_osc_message(OscMessage* pMessage, int argId) {
     return pCurrValue;
 }
 
-void print_memory_block_hex(void* pMemBlock, int memBlockSize) {
-    int i;
-    
-    for (i = 0; i < memBlockSize; i++) { 
-        printf("%02hhX ", ((unsigned char*) pMemBlock)[i]);
-    }
-    
-    printf("\n");
-}
 
 int calculate_str_size_with_padding(char* s) {
     int strSize = strlen(s);
