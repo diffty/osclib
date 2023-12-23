@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "utils_general.h"
 #include "utils_math.h"
@@ -97,6 +98,30 @@ void add_arg_to_osc_message(OscMessage* pMessage, OscArg* pOscArg) {
 
     pMessage->args = (OscArg*) malloc(pMessage->argsCount * sizeof(OscArg));
     memcpy(pMessage->args, newOscArgArray, pMessage->argsCount * sizeof(OscArg));
+}
+
+OscMessage make_osc_message(const char* address, const char* typeTags, ...) {
+    OscMessage newOscMsg;
+    init_osc_message(&newOscMsg);
+    set_osc_message_address(&newOscMsg, address);
+
+    va_list pArgs;
+    va_start(pArgs, typeTags);
+
+    int i = 0;
+    do {
+        void* argValue = va_arg(pArgs, void*);
+        OscArg* newOscArg = (OscArg*) malloc(sizeof(OscArg));
+        init_osc_arg(newOscArg);
+        set_osc_arg_value(newOscArg, argValue, typeTags[i]);
+        print_memory_block_hex(argValue, newOscArg->sizeWPad);
+        print_memory_block_hex(newOscArg->data, newOscArg->sizeWPad);
+        add_arg_to_osc_message(&newOscMsg, newOscArg);
+    } while (typeTags[++i] != '\0');
+
+    va_end(pArgs);
+
+    return newOscMsg;
 }
 
 char* assemble_osc_message_args(OscMessage* pMsg, char* fullArgs) {

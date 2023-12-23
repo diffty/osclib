@@ -115,4 +115,14 @@ int main() {
     free_osc_arg(&floatArg4);
 
     free_osc_message(&message);
+
+    
+    OscMessage newMsg = make_osc_message("/test/ouida", "iisf", &arg1, &arg2, &arg3, &arg4);
+    fullArgs = (char*) malloc(newMsg.size);
+    assemble_osc_message_args(&newMsg, fullArgs);
+    print_memory_block_hex(fullArgs, newMsg.size);
+
+    for (i = 0; i < newMsg.size; i++) {
+        printf("%c", fullArgs[i]);
+    }
 }
