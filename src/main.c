@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+
 #include "osc_data.h"
 
 
@@ -85,6 +91,23 @@ int main() {
         printf("%c", wholeMsg[i]);
     }
 
+    struct sockaddr_in dest;
+
+    int sck;
+    if ((sck = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        printf("Error opening socket!!\n");
+        exit(1);
+    }
+
+    memset(&dest, 0, sizeof(dest));
+
+    dest.sin_family = AF_INET;
+    dest.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    dest.sin_port = htons(7001);
+
+    sendto(sck, wholeMsg, wholeMsgSize, 0, &dest, sizeof(dest));
+
+    close(sck);
 
     free_osc_arg(&intArg1);
     free_osc_arg(&intArg2);
