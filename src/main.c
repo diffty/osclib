@@ -5,10 +5,10 @@
 #include "osc_data.h"
 
 
-void main() {
+int main() {
     OscMessage message;
     init_osc_message(&message);
-    
+    set_osc_message_address(&message, "/test/ouida");
 
     OscArg intArg1;
     init_osc_arg(&intArg1);
@@ -47,12 +47,49 @@ void main() {
     add_arg_to_osc_message(&message, &floatArg4);
     print_memory_block_hex(message.args[3].data, floatArg4.size);
 
+
+    char* fullArgs = (char*) malloc(message.size);
+    assemble_osc_message_args(&message, fullArgs);
+    print_memory_block_hex(fullArgs, message.size);
+
+    int typeTagsStrPadSize = calculate_size_with_padding(message.argsCount + 2);
+    char* typeTags = (char*) malloc(typeTagsStrPadSize);
+    memset(typeTags, '\0', typeTagsStrPadSize);
+    assemble_osc_message_type_tags(&message, typeTags);
+
+    printf("%s\n", typeTags);
+    print_memory_block_hex(typeTags, typeTagsStrPadSize);
+
+    printf("%s\n", message.address);
+
+
+    int msgAddrSize = calculate_size_with_padding(strlen(message.address) + 1);
+    
+    int wholeMsgSize = msgAddrSize
+                       + typeTagsStrPadSize
+                       + message.size;
+
+    char* wholeMsg = (char*) malloc(wholeMsgSize);
+    memset(wholeMsg, '\0', wholeMsgSize);
+
+    // TODO faire une routine pour assembler des bytestream comme ça
+    memcpy(&wholeMsg[0], message.address, msgAddrSize);
+    memcpy(&wholeMsg[msgAddrSize], typeTags, typeTagsStrPadSize);
+    memcpy(&wholeMsg[msgAddrSize + typeTagsStrPadSize], fullArgs, message.size);
+    
+    free(fullArgs);
+    free(typeTags);
+
     int i;
-    char* wholeMessage = (char*) malloc(message.size);
-    for (i = 0; i < message.argsCount; i++) {
-        OscArg pOscArg = message.args[i];
-        memcpy(&wholeMessage[pOscArg.msgDataIdx], pOscArg.data, pOscArg.sizeWPad);
+    for (i = 0; i < wholeMsgSize; i++) {
+        printf("%c", wholeMsg[i]);
     }
 
-    print_memory_block_hex(wholeMessage, message.size);
+
+    free_osc_arg(&intArg1);
+    free_osc_arg(&intArg2);
+    free_osc_arg(&strArg3);
+    free_osc_arg(&floatArg4);
+
+    free_osc_message(&message);
 }
