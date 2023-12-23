@@ -9,18 +9,9 @@
 
 int get_arg_value_size(void* pArgData, char argType) {
     switch (argType) {
-        case 'i': {
-            return sizeof(int32_t);
-        }
-
-        case 'f': {
-            return sizeof(float);
-        }
-
-        case 'b': {
-            return sizeof(char);
-        }
-
+        case 'i': { return sizeof(int32_t); }
+        case 'f': { return sizeof(float); }
+        case 'b': { return sizeof(char); }
         case 's': {
             int strSize = 0; while (((char*) pArgData)[strSize++] != '\0');
             return strSize;
