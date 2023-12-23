@@ -64,6 +64,9 @@ void set_osc_arg_value(OscArg* pOscArg, void* pValue, char type) {
     pOscArg->data = malloc(pOscArg->sizeWPad);
     pOscArg->type = type;
 
+    memset(pOscArg->data, '\0', pOscArg->sizeWPad);
+    memcpy(pOscArg->data, pValue, pOscArg->size);
+
     // OSC args data is basically uint32 big endian on most types so we reverse
     // their byte order bc most computers are little endian
     if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) {
@@ -71,14 +74,11 @@ void set_osc_arg_value(OscArg* pOscArg, void* pValue, char type) {
             case 'b':
             case 'f':
             case 'i': {
-                *((int*) pValue) = __builtin_bswap32(*((int*) pValue));
+                *((uint32_t*) pOscArg->data) = __builtin_bswap32(*((uint32_t*) pOscArg->data));
                 break;
             }
         }
     }
-
-    memset(pOscArg->data, '\0', pOscArg->sizeWPad);
-    memcpy(pOscArg->data, pValue, pOscArg->size);
 }
 
 void add_arg_to_osc_message(OscMessage* pMessage, OscArg* pOscArg) {
