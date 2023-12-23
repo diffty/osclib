@@ -42,6 +42,7 @@ void free_osc_arg(OscArg* pOscArg) {
 
 void free_osc_message(OscMessage* pOscMsg) {
     if (pOscMsg->args != NULL) free(pOscMsg->args);
+    // TODO: free all individual args
     if (pOscMsg->address != NULL) free(pOscMsg->address);
     pOscMsg->address = NULL;
     pOscMsg->args = NULL;
@@ -50,7 +51,7 @@ void free_osc_message(OscMessage* pOscMsg) {
 }
 
 // Copy the address char* into the struct and already pad it
-void set_osc_message_address(OscMessage* pOscMsg, char* address) {
+void set_osc_message_address(OscMessage* pOscMsg, const char* address) {
     int addressStrSize = strlen(address) * sizeof(char)+1;
     int addressStrSizePadded = calculate_size_with_padding(addressStrSize);
     pOscMsg->address = (char*) malloc(addressStrSizePadded);
