@@ -124,23 +124,26 @@ OscMessage make_osc_message(const char* address, const char* typeTags, ...) {
     return newOscMsg;
 }
 
-char* assemble_osc_message_args(OscMessage* pMsg, char* fullArgs) {
+int assemble_osc_message_args(OscMessage* pMsg, char* fullArgs) {
     int i;
+    int dataSize = 0;
+    
     for (i = 0; i < pMsg->argsCount; i++) {
         OscArg pOscArg = pMsg->args[i];
         memcpy(&fullArgs[pOscArg.msgDataIdx], pOscArg.data, pOscArg.sizeWPad);
+        dataSize += pOscArg.sizeWPad;
     }
-    return fullArgs;
+
+    return dataSize;
 }
 
-char* assemble_osc_message_type_tags(OscMessage* pMsg, char* typeTagsStr) {
+int assemble_osc_message_type_tags(OscMessage* pMsg, char* typeTagsStr) {
     typeTagsStr[0] = ',';
 
     int i;
     for (i = 0; i < pMsg->argsCount; i++) {
         typeTagsStr[i+1] = pMsg->args[i].type;
     }
-    return typeTagsStr;
-}
-
+    
+    return pMsg->argsCount;
 }
