@@ -12,7 +12,7 @@ int get_arg_value_size(void* pArgData, char argType) {
     switch (argType) {
         case 'i': { return sizeof(int32_t); }
         case 'f': { return sizeof(float); }
-        case 'b': { return sizeof(char); }
+        case 'b': { return ((uint32_t) pArgData); }
         case 's': {
             int strSize = 0; while (((char*) pArgData)[strSize++] != '\0');
             return strSize;
@@ -73,7 +73,6 @@ void set_osc_arg_value(OscArg* pOscArg, void* pValue, char type) {
     // their byte order bc most computers are little endian
     if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) {
         switch (pOscArg->type) {
-            case 'b':
             case 'f':
             case 'i': {
                 *((uint32_t*) pOscArg->data) = __builtin_bswap32(*((uint32_t*) pOscArg->data));
@@ -81,6 +80,13 @@ void set_osc_arg_value(OscArg* pOscArg, void* pValue, char type) {
             }
         }
     }
+}
+
+void create_blob_data(void* blobData, char* data, int size) {
+    int32_t sizeWPadding = calculate_size_with_padding(size);
+    memcpy(&data, &sizeWPadding, sizeof(uint32_t));
+    memset(&data, '\0', size);
+    memcpy(&data[sizeof(uint32_t)], data, sizeof(uint32_t));
 }
 
 void add_arg_to_osc_message(OscMessage* pMessage, OscArg* pOscArg) {
