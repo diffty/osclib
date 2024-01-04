@@ -120,8 +120,8 @@ OscMessage make_osc_message(const char* address, const char* typeTags, ...) {
         OscArg* newOscArg = (OscArg*) malloc(sizeof(OscArg));
         init_osc_arg(newOscArg);
         set_osc_arg_value(newOscArg, argValue, typeTags[i]);
-        print_memory_block_hex(argValue, newOscArg->sizeWPad);
-        print_memory_block_hex(newOscArg->data, newOscArg->sizeWPad);
+        //print_memory_block_hex(argValue, newOscArg->sizeWPad);
+        //print_memory_block_hex(newOscArg->data, newOscArg->sizeWPad);
         add_arg_to_osc_message(&newOscMsg, newOscArg);
     } while (typeTags[++i] != '\0');
 
